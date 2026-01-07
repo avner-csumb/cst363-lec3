@@ -137,7 +137,7 @@ FROM instructor;
 
 
 <CsvTable
-src="data/dept_name1.csv"
+src="/data/dept_name1.csv"
 caption="instructor"
 :max-rows="12"
 max-height="45vh"
