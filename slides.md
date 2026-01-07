@@ -32,8 +32,9 @@ CST 363
 
 ## Topics
 
-<div class="p-3">
+<div class="p-4">
 
+<v-clicks depth="2">
 
 - `SELECT DISTINCT`
 - *Scalar* functions
@@ -42,6 +43,8 @@ CST 363
 - Constraints
   - `CHECK` constraints
   - Foreign keys
+
+</v-clicks>
 
 </div>
 
@@ -63,7 +66,7 @@ layout: section
 
 ---
 
-## ER Diagram — Crow’s Foot Notation
+## ER Diagram — Crow's Foot Notation
 
 <br>
 
@@ -75,17 +78,27 @@ layout: section
 
 <div class="p-3">
 
+<v-clicks depth="2">
 
 - Dotted line --- **weak / non-identifying** relationship
-  - The *child* table references the *parent's* primary key as a foreign key, but the child’s own primary key does not depend on it. The child still has its own identity.
+  - The *child* table references the *parent's* primary key as a foreign key,<br>but the child’s own primary key does not depend on it. The child still has its own identity.
   - FK exists, but not part of PK
+
+
+</v-clicks>
 
 </div>
 
 <div class="pt-6 pl-3">
 
+<v-clicks depth="2">
+
+
 - Solid line --- strong / identifying relationship
   - FK is part of PK
+
+</v-clicks>
+
 
 </div>
 
