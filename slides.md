@@ -1,26 +1,11 @@
 ---
 theme: default
-# random image from a curated Unsplash collection by Anthony
-# like them? see https://unsplash.com/collections/94734566/slidev
 background: https://cover.sli.dev
-# some information about your slides (markdown enabled)
-title: Welcome to Slidev
-info: |
-  ## Slidev Starter Template
-  Presentation slides for developers.
-
-  Learn more at [Sli.dev](https://sli.dev)
-# apply UnoCSS classes to the current slide
+title: CST 363
 class: text-center
-# https://sli.dev/features/drawing
 drawings:
   persist: false
-# slide transition: https://sli.dev/guide/animations.html#slide-transitions
-# transition: slide-left
-# enable MDC Syntax: https://sli.dev/features/mdc
 mdc: true
-# duration of the presentation
-duration: 35min
 ---
 
 # Functions, Integrity
@@ -42,7 +27,9 @@ CST 363
 - `NULL` values
 - Constraints
   - `CHECK` constraints
+  - `UNIQUE`
   - Foreign keys
+- Cascading actions
 
 </v-clicks>
 
@@ -112,13 +99,11 @@ layout: section
 
 - SQL allows duplicates in relations as well as in query results.
 - To force the elimination of duplicates, insert the keyword `DISTINCT` after `SELECT`.
+  - `DISTINCT` applies to the entire selected row (all selected columns), not each column independently.
 - Find the department names of all instructors, and remove duplicates
 
 
 </v-clicks>
-
-<br>
-
 
 <div class="grid grid-cols-2 gap-8">
 
@@ -184,7 +169,7 @@ cell-max-width="16ch"
 ---
 
 
-## Scalar Functions
+## "Scalar" Functions
 
 <div class="p-4">
 
@@ -197,7 +182,7 @@ cell-max-width="16ch"
     - `UPPER(name), LOWER(name)` <br> <br>
   - finding string length, extracting substrings, find a substring etc.
     - `LENGTH(name),   SUBSTRING(name, 3, 4)`
-    - `SELECT LOCATE('SU', 'CSUMB')`   →    returns 2
+    - `SELECT POSITION('SU' IN 'CSUMB');`   →    returns 2
     - SQL starts indexing with 1, not 0
 
 </v-clicks>
@@ -217,6 +202,7 @@ cell-max-width="16ch"
 
 </div>
 
+
 ---
 
 
@@ -228,7 +214,7 @@ cell-max-width="16ch"
 <v-clicks depth="2">
 
 
-- The predicate like uses patterns to match strings that are described using two special characters:
+- The predicate `LIKE` uses patterns to match strings that are described using two special characters:
   - percent ( `%` ).  The % character matches any substring.
   - underscore ( `_` ).  The _ character matches any character.
 - Find the names of all instructors whose name includes the substring "dar".
@@ -268,6 +254,8 @@ WHERE instructor_name LIKE '%dar%';
 
 </div>
 
+
+
 ---
 
 ## BETWEEN Predicate 
@@ -302,7 +290,6 @@ WHERE salary >= 90000  AND salary <= 100000;
 <div class="p-4">
 
 
-
 ```sql
 SELECT instructor_name, dept_name
 FROM instructor
@@ -312,7 +299,7 @@ WHERE (ID, dept_name) = ('45565', 'Comp. Sci.');
 equivalent to:
 
 ```sql
-SELECT name, course_id
+SELECT instructor_name, dept_name
 FROM instructor
 WHERE ID = '45565' AND dept_name = 'Comp. Sci.';
 ```
@@ -326,11 +313,11 @@ WHERE ID = '45565' AND dept_name = 'Comp. Sci.';
 <div class="p-4">
 
 
-- The predicate is `NULL` can be used to check for null values.
+- The predicate `IS NULL` can be used to check for null values.
 - Example: Find all instructors whose salary is `NULL`.
 
 ```sql
-SELECT name
+SELECT instructor_name
 FROM instructor
 WHERE salary IS NULL;
 ```
@@ -361,6 +348,7 @@ WHERE salary IS NULL;
           (unknown OR unknown) = unknown
 
 - Result of `WHERE` clause predicate is treated as false if it evaluates to unknown
+- **Note:** `= NULL` never works; use `IS NULL`.
 
 </div>
 
@@ -391,6 +379,19 @@ You define the integrity constraints; the database enforces them.
 
 </div>
 
+---
+
+## Recall: Constraints
+
+<div class="p-4">
+
+- `PRIMARY KEY` = `UNIQUE` + `NOT NULL`
+- `FOREIGN KEY` = must reference an existing parent key
+- `CHECK` = row-level predicate must be true
+
+</div>
+
+
 --- 
 
 ## SQL CHECK constraints (Example 1 of 3)
@@ -407,7 +408,7 @@ CREATE TABLE department (
 );
 ```
 
-A department’s budget must be greater than 0
+A department's budget must be greater than 0
 
 
 </div>
@@ -431,7 +432,7 @@ CREATE TABLE section (
 );
 ```
 
-Semester can be only 'Fall', 'Winter', 'Summer', etc.
+Semester must be one of Fall/Winter/Spring/Summer.
 
 </div>
 
@@ -451,13 +452,14 @@ CREATE TABLE course (
    dept_name VARCHAR(20),
    credits NUMERIC(2, 0),
    CHECK (
-       dept_name != 'Comp. Sci.' OR
+       dept_name <> 'Comp. Sci.' OR
        course_id LIKE 'CS-%'
    )
 );
 ```
 
-If dept_name is "Comp. Sci." then course_id must start with "CS-"
+- If dept_name is "Comp. Sci." then course_id must start with "CS-"
+- `<>` can also be written in PostgreSQL as `!=`
 
 </div>
 
@@ -470,14 +472,15 @@ If dept_name is "Comp. Sci." then course_id must start with "CS-"
 
 ```sql
 CREATE TABLE department (
-   dept_name VARCHAR(20),
+   dept_name VARCHAR(20) PRIMARY KEY,
+   dept_abbrv VARCHAR(4),
    building VARCHAR(15),
    budget NUMERIC(12, 2),
-   UNIQUE (dept_name)
+   UNIQUE (dept_abbrv)
 );
 ```
 
-No two rows can have the same non-null dept_name values 
+No two rows can have the same non-null `dept_abbr` values 
 
 Things to remember:
 - `UNIQUE` constraints look like primary key constraints except unique columns can be a null value, primary key’s do not allow null values.
@@ -494,7 +497,7 @@ Things to remember:
 <div class="p-4">
 
 
-A foreign key column(s), if not null, must match the primary key of the referenced table.
+A foreign key column(s), if not null, must match a candidate key (typically the PK) of the referenced table.
 
 
 ```sql
@@ -509,7 +512,7 @@ CREATE TABLE course (
 <br>
 
 - `INSERT INTO course VALUES (..., NULL, ...);`    →    OK
-- `INSERT INTO course VALUES (..., 'Comp Sci.', ...);`    →    OK
+- `INSERT INTO course VALUES (..., 'Comp. Sci.', ...);`    →    OK
 - `INSERT INTO course VALUES (..., 'CompSci.', ...);` →    Constraint violation, misspelled    
 
 
