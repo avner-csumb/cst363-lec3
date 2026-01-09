@@ -1,4 +1,5 @@
 ---
+#
 theme: default
 background: https://cover.sli.dev
 title: CST 363
@@ -59,6 +60,7 @@ layout: section
 
 ![](/images/crow.png){class="w-100"}
 
+
 ---
 
 ## ER Diagram — Weak vs Strong Relationships
@@ -88,6 +90,52 @@ layout: section
 
 
 </div>
+
+
+---
+
+
+## Example ER Diagram for University Database (Again)
+
+
+<div class="grid grid-cols-2 gap-8">
+
+<div>
+
+<br>
+
+
+![](/images/er_diag.png){class="w-140"}
+
+
+</div>
+
+
+<div>
+
+<br>
+
+
+<v-clicks depth="3">
+
+- Identifying (solid)
+  - Example: `student` → `advisor`
+    - advisor is identified by the student:
+      - **PK**: `(s_ID)`
+    - `advisor.s_ID` is both **FK** to student(ID) and the **PK** → identifying.
+- Non-identifying (dashed)
+  - Example: `department` → `course`
+    - course has its own **PK** (`course_id`).
+      - `dept_name` is **FK** but not part of course **PK** → non-identifying.
+
+</v-clicks>
+
+
+</div>
+
+
+</div>
+
 
 ---
 
@@ -170,8 +218,11 @@ cell-max-width="16ch"
 
 
 ## "Scalar" Functions
+A scalar function returns one value per row (or per call) --- not a table/result set.
+
 
 <div class="p-4">
+
 
 <v-clicks depth="4">
 
@@ -262,23 +313,42 @@ WHERE instructor_name LIKE '%dar%';
 
 <div class="p-4">
 
-- SQL includes a `BETWEEN` comparison operator
+<v-clicks>
+
+- SQL includes a `BETWEEN` comparison operator <br><br>
 - Example:  Find the names of all instructors with salary between $90,000 and $100,000
 
+</v-clicks>
+
+
 <br>
+
+<v-click>
 
 ```sql
 SELECT instructor_name
 FROM instructor
 WHERE salary BETWEEN 90000 AND 100000;
 ```
+
+
+</v-click>
+
+<v-click>
+
+
 <small>equivalent to:</small>
 
 ```sql
 SELECT instructor_name
 FROM instructor
 WHERE salary >= 90000  AND salary <= 100000;
+
+
 ```
+
+</v-click>
+
 
 </div>
 
@@ -289,12 +359,19 @@ WHERE salary >= 90000  AND salary <= 100000;
 
 <div class="p-4">
 
+<v-click>
+
 
 ```sql
 SELECT instructor_name, dept_name
 FROM instructor
 WHERE (ID, dept_name) = ('45565', 'Comp. Sci.');
 ```
+
+</v-click>
+
+<v-click>
+
 
 equivalent to:
 
@@ -304,6 +381,9 @@ FROM instructor
 WHERE ID = '45565' AND dept_name = 'Comp. Sci.';
 ```
 
+</v-click>
+
+
 </div>
 
 ---
@@ -312,9 +392,15 @@ WHERE ID = '45565' AND dept_name = 'Comp. Sci.';
 
 <div class="p-4">
 
+<v-clicks>
 
-- The predicate `IS NULL` can be used to check for null values.
+
+- The predicate `IS NULL` can be used to check for null values. <br><br>
 - Example: Find all instructors whose salary is `NULL`.
+
+</v-clicks>
+
+<v-click>
 
 ```sql
 SELECT instructor_name
@@ -322,9 +408,18 @@ FROM instructor
 WHERE salary IS NULL;
 ```
 
+</v-click>
+
+
+<v-clicks>
+
+
 - The predicate `IS NOT NULL` succeeds if the value on which it is applied is not null.
 - The result of an expression involving `NULL` is `NULL`
 - *Example:*  `5 + NULL`  returns `NULL`
+
+</v-clicks>
+
 
 </div>
 
@@ -335,6 +430,8 @@ WHERE salary IS NULL;
 
 <div class="p-4">
 
+<v-clicks depth="2">
+
 - SQL treats as unknown the result of any comparison involving a null value (other than predicates `IS NULL` and  `IS NOT NULL`). 
   - Example: `5 < NULL`   or   `NULL <> NULL`    or    `NULL = NULL`
 - The predicate in a `WHERE` clause can involve Boolean operations (`AND`, `OR`); thus the definitions of the Boolean operations need to be  extended to deal with the value **unknown**.
@@ -344,11 +441,13 @@ WHERE salary IS NULL;
           (unknown AND unknown) = unknown
 
   - `OR`:     (unknown OR true)   = true,
-          (unknown OR false)  = unknown
+          (unknown OR false)  = unknown, 
           (unknown OR unknown) = unknown
 
 - Result of `WHERE` clause predicate is treated as false if it evaluates to unknown
 - **Note:** `= NULL` never works; use `IS NULL`.
+
+</v-clicks>
 
 </div>
 
@@ -385,9 +484,13 @@ You define the integrity constraints; the database enforces them.
 
 <div class="p-4">
 
+<v-clicks>
+
 - `PRIMARY KEY` = `UNIQUE` + `NOT NULL`
 - `FOREIGN KEY` = must reference an existing parent key
 - `CHECK` = row-level predicate must be true
+
+</v-clicks>
 
 </div>
 
@@ -408,8 +511,11 @@ CREATE TABLE department (
 );
 ```
 
-A department's budget must be greater than 0
+<v-click>
 
+- A department's budget must be greater than 0
+
+</v-click>
 
 </div>
 
@@ -432,7 +538,14 @@ CREATE TABLE section (
 );
 ```
 
-Semester must be one of Fall/Winter/Spring/Summer.
+<br>
+
+<v-click>
+
+- Semester must be one of Fall/Winter/Spring/Summer.
+
+</v-click>
+
 
 </div>
 
@@ -458,8 +571,17 @@ CREATE TABLE course (
 );
 ```
 
+
+<br>
+
+
+<v-clicks>
+
 - If dept_name is "Comp. Sci." then course_id must start with "CS-"
 - `<>` can also be written in PostgreSQL as `!=`
+
+</v-clicks>
+
 
 </div>
 
@@ -480,13 +602,29 @@ CREATE TABLE department (
 );
 ```
 
-No two rows can have the same non-null `dept_abbr` values 
+
+<br>
+
+
+<v-click>
+
+No two rows can have the same non-null `dept_abbrv` values 
+
+</v-click>
+
+<v-click>
 
 Things to remember:
+
+</v-click>
+
+<v-clicks depth="2">
+
 - `UNIQUE` constraints look like primary key constraints except unique columns can be a null value, primary key’s do not allow null values.
 - A table can have many `UNIQUE` constraints
-- `null = x`  is always false, so `UNIQUE` only cares about non-null values
+- `NULL = x`  is always false, so `UNIQUE` only cares about non-null values
 
+</v-clicks>
 
 </div>
 
@@ -511,10 +649,13 @@ CREATE TABLE course (
 
 <br>
 
+<v-clicks>
+
 - `INSERT INTO course VALUES (..., NULL, ...);`    →    OK
 - `INSERT INTO course VALUES (..., 'Comp. Sci.', ...);`    →    OK
 - `INSERT INTO course VALUES (..., 'CompSci.', ...);` →    Constraint violation, misspelled    
 
+</v-clicks>
 
 </div>
 
@@ -526,10 +667,16 @@ CREATE TABLE course (
 <div class="p-4">
 
 
+<v-clicks depth="2">
+
 - When a referential-integrity constraint is violated, the normal procedure is to reject the action that caused the violation.  
-- An alternative, in case of DELETE or UPDATE is to CASCADE.  
+- An alternative, in case of `DELETE` or `UPDATE` is to `CASCADE`.  
   - If the department is deleted, delete all courses related to that department.  
   - If the department name is updated in the department table, change the foreign key values in the course's table.
+
+</v-clicks>
+
+<v-click>
 
 ```sql
 CREATE TABLE course (
@@ -542,6 +689,8 @@ CREATE TABLE course (
 );
 ```
 
+</v-click>
+
 </div>
 
 ---
@@ -551,10 +700,13 @@ CREATE TABLE course (
 
 <div class="p-4">
 
+<v-clicks depth="2">
 
 - Instead of `CASCADE`, we can use `SET NULL` or `SET DEFAULT`:
   - `SET NULL`: If the referenced row is deleted or updated, the foreign key is set to `NULL`.
   - `SET DEFAULT`: If the referenced row is deleted or updated, the foreign key is set to its default value (if a default is defined).
 
+
+</v-clicks>
 
 </div>
